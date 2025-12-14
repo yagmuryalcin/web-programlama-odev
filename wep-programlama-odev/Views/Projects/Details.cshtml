@@ -10,27 +10,55 @@
     <h4>Project</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
+        <dt class="col-sm-2">Name</dt>
+        <dd class="col-sm-10">@Model.Name</dd>
+
+        <dt class="col-sm-2">Description</dt>
+        <dd class="col-sm-10">@Model.Description</dd>
+
+        <dt class="col-sm-2">CreatedAt</dt>
+        <dd class="col-sm-10">@Model.CreatedAt</dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<hr />
+
+<h4>Tasks for this Project</h4>
+
+@if (Model.TaskItems == null || !Model.TaskItems.Any())
+{
+    <p>No tasks found for this project.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Status</th>
+                <th>CreatedAt</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.TaskItems.OrderByDescending(t => t.CreatedAt))
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.Status</td>
+                    <td>@item.CreatedAt</td>
+                    <td>
+                        <a asp-controller="TaskItems" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-controller="TaskItems" asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-controller="TaskItems" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<div class="mt-2">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit Project</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </div>

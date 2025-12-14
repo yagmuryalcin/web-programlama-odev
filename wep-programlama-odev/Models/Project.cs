@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace wep_programlama_odev.Models
 {
@@ -6,15 +8,16 @@ namespace wep_programlama_odev.Models
     {
         public int Id { get; set; }
 
-        [Required, StringLength(100)]
+        [Required(ErrorMessage = "Proje adı zorunludur.")]
+        [StringLength(100, ErrorMessage = "Proje adı en fazla 100 karakter olabilir.")]
         public string Name { get; set; } = string.Empty;
 
-        [StringLength(500)]
+        [StringLength(500, ErrorMessage = "Açıklama en fazla 500 karakter olabilir.")]
         public string? Description { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        // 1 Project -> N Task
-        public List<TaskItem> Tasks { get; set; } = new();
+        // Navigation
+        public ICollection<TaskItem> TaskItems { get; set; } = new List<TaskItem>();
     }
 }

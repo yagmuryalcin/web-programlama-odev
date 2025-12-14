@@ -8,7 +8,6 @@
 
 <h4>TaskItem</h4>
 <hr />
-
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create" method="post">
@@ -28,8 +27,7 @@
 
             <div class="form-group">
                 <label asp-for="Status" class="control-label"></label>
-                <select asp-for="Status"
-                        class="form-control"
+                <select asp-for="Status" class="form-control"
                         asp-items="Html.GetEnumSelectList<wep_programlama_odev.Models.TaskStatus>()">
                     <option value="">-- Select Status --</option>
                 </select>
