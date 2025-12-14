@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using wep_programlama_odev.Models;
 
 namespace wep_programlama_odev.Data
 {
@@ -9,5 +10,8 @@ namespace wep_programlama_odev.Data
             : base(options)
         {
         }
+        public DbSet<Project> Projects => Set<Project>();
+        public DbSet<TaskItem> TaskItems => Set<TaskItem>();
+
     }
 }
