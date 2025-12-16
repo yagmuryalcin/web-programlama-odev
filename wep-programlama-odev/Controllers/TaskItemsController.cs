@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using wep_programlama_odev.Data;
 using wep_programlama_odev.Models;
+using Microsoft.AspNetCore.Authorization;
 
 // ✅ Çakışmayı çözmek için alias:
 using TaskStatusEnum = wep_programlama_odev.Models.TaskStatus;
 
 namespace wep_programlama_odev.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class TaskItemsController : Controller
     {
         private readonly ApplicationDbContext _context;

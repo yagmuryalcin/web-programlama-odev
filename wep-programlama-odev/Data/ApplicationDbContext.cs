@@ -10,8 +10,8 @@ namespace wep_programlama_odev.Data
             : base(options)
         {
         }
-        public DbSet<Project> Projects => Set<Project>();
-        public DbSet<TaskItem> TaskItems => Set<TaskItem>();
 
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<TaskItem> TaskItems { get; set; }
     }
 }

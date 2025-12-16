@@ -5,9 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using wep_programlama_odev.Data;
 using wep_programlama_odev.Models;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace wep_programlama_odev.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ProjectsController : Controller
     {
         private readonly ApplicationDbContext _context;
