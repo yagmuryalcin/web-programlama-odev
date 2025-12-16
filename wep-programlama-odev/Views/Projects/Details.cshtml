@@ -23,24 +23,33 @@
 
 <hr />
 
-<div class="d-flex justify-content-between align-items-center">
-    <h4 class="mb-0">Tasks for this Project</h4>
+<h4>Tasks for this Project</h4>
 
-    <a asp-controller="TaskItems"
-       asp-action="Create"
-       asp-route-projectId="@Model.Id"
-       class="btn btn-success">
-        Add Task
-    </a>
-</div>
+@{
+    var tasks = Model.TaskItems?.ToList() ?? new List<wep_programlama_odev.Models.TaskItem>();
+    var total = tasks.Count;
+    var doneCount = tasks.Count(t => t.Status == wep_programlama_odev.Models.TaskStatus.Done);
+    var inProgressCount = tasks.Count(t => t.Status == wep_programlama_odev.Models.TaskStatus.InProgress);
+    var todoCount = tasks.Count(t => t.Status == wep_programlama_odev.Models.TaskStatus.Todo);
+}
 
-@if (Model.TaskItems == null || !Model.TaskItems.Any())
+@if (total > 0)
 {
-    <p class="mt-2">No tasks found for this project.</p>
+    <div class="mb-3">
+        <span class="me-3"><strong>Total:</strong> @total</span>
+        <span class="me-3"><strong>To Do:</strong> @todoCount</span>
+        <span class="me-3"><strong>In Progress:</strong> @inProgressCount</span>
+        <span class="me-3"><strong>Done:</strong> @doneCount</span>
+    </div>
+}
+
+@if (!tasks.Any())
+{
+    <p>No tasks found for this project.</p>
 }
 else
 {
-    <table class="table mt-2">
+    <table class="table">
         <thead>
             <tr>
                 <th>Title</th>
@@ -50,12 +59,36 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.TaskItems.OrderByDescending(t => t.CreatedAt))
+            @foreach (var item in tasks.OrderByDescending(t => t.CreatedAt))
             {
+                string badgeClass = item.Status switch
+                {
+                    wep_programlama_odev.Models.TaskStatus.Todo => "bg-secondary",
+                    wep_programlama_odev.Models.TaskStatus.InProgress => "bg-warning text-dark",
+                    wep_programlama_odev.Models.TaskStatus.Done => "bg-success",
+                    _ => "bg-dark"
+                };
+
+                string statusText = item.Status switch
+                {
+                    wep_programlama_odev.Models.TaskStatus.Todo => "To Do",
+                    wep_programlama_odev.Models.TaskStatus.InProgress => "In Progress",
+                    wep_programlama_odev.Models.TaskStatus.Done => "Done",
+                    _ => item.Status.ToString()
+                };
+
+                bool isDone = item.Status == wep_programlama_odev.Models.TaskStatus.Done;
+
                 <tr>
-                    <td>@item.Title</td>
-                    <td>@item.Status</td>
-                    <td>@item.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>
+                        <span class="@(isDone ? "text-decoration-line-through text-muted" : "")">
+                            @item.Title
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge @badgeClass">@statusText</span>
+                    </td>
+                    <td>@item.CreatedAt</td>
                     <td>
                         <a asp-controller="TaskItems" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                         <a asp-controller="TaskItems" asp-action="Details" asp-route-id="@item.Id">Details</a> |

@@ -9,51 +9,58 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Project)
-            </th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>CreatedAt</th>
+            <th>Project</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Project.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            // Status'a göre görsel sınıflar
+            string badgeClass = item.Status switch
+            {
+                wep_programlama_odev.Models.TaskStatus.Todo => "bg-secondary",
+                wep_programlama_odev.Models.TaskStatus.InProgress => "bg-warning text-dark",
+                wep_programlama_odev.Models.TaskStatus.Done => "bg-success",
+                _ => "bg-dark"
+            };
+
+            string statusText = item.Status switch
+            {
+                wep_programlama_odev.Models.TaskStatus.Todo => "To Do",
+                wep_programlama_odev.Models.TaskStatus.InProgress => "In Progress",
+                wep_programlama_odev.Models.TaskStatus.Done => "Done",
+                _ => item.Status.ToString()
+            };
+
+            bool isDone = item.Status == wep_programlama_odev.Models.TaskStatus.Done;
+
+            <tr>
+                <td>
+                    <span class="@(isDone ? "text-decoration-line-through text-muted" : "")">
+                        @item.Title
+                    </span>
+                </td>
+                <td>@item.Description</td>
+                <td>
+                    <span class="badge @badgeClass">@statusText</span>
+                </td>
+                <td>@item.CreatedAt</td>
+                <td>@item.Project?.Name</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
