@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using wep_programlama_odev.Data;
 using wep_programlama_odev.Models;
 
-// ✅ Çakışmayı kökten çözer:
+// ✅ Çakışmayı çözmek için alias:
 using TaskStatusEnum = wep_programlama_odev.Models.TaskStatus;
 
 namespace wep_programlama_odev.Controllers
@@ -24,8 +24,12 @@ namespace wep_programlama_odev.Controllers
         // GET: TaskItems
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.TaskItems.Include(t => t.Project);
-            return View(await applicationDbContext.ToListAsync());
+            var taskItems = await _context.TaskItems
+                .Include(t => t.Project)
+                .OrderByDescending(t => t.CreatedAt)
+                .ToListAsync();
+
+            return View(taskItems);
         }
 
         // GET: TaskItems/Details/5
@@ -43,10 +47,19 @@ namespace wep_programlama_odev.Controllers
         }
 
         // GET: TaskItems/Create
-        public IActionResult Create()
+        // /TaskItems/Create?projectId=1 gibi gelirse Project seçili gelsin
+        public async Task<IActionResult> Create(int? projectId)
         {
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name");
-            return View();
+            await FillDropdowns(projectId);
+
+            var model = new TaskItem
+            {
+                ProjectId = projectId ?? 0,
+                Status = TaskStatusEnum.Todo, // varsayılan
+                CreatedAt = DateTime.Now
+            };
+
+            return View(model);
         }
 
         // POST: TaskItems/Create
@@ -56,13 +69,15 @@ namespace wep_programlama_odev.Controllers
         {
             if (ModelState.IsValid)
             {
-                taskItem.CreatedAt = DateTime.Now; // ✅ otomatik
+                taskItem.CreatedAt = DateTime.Now;
                 _context.Add(taskItem);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                // Proje detayına geri dönmek daha mantıklı
+                return RedirectToAction("Details", "Projects", new { id = taskItem.ProjectId });
             }
 
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", taskItem.ProjectId);
+            await FillDropdowns(taskItem.ProjectId);
             return View(taskItem);
         }
 
@@ -74,39 +89,34 @@ namespace wep_programlama_odev.Controllers
             var taskItem = await _context.TaskItems.FindAsync(id);
             if (taskItem == null) return NotFound();
 
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", taskItem.ProjectId);
+            await FillDropdowns(taskItem.ProjectId);
             return View(taskItem);
         }
 
         // POST: TaskItems/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Status,ProjectId")] TaskItem taskItem)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Status,ProjectId,CreatedAt")] TaskItem taskItem)
         {
             if (id != taskItem.Id) return NotFound();
-
-            var existing = await _context.TaskItems.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id);
-            if (existing == null) return NotFound();
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    taskItem.CreatedAt = existing.CreatedAt; // ✅ CreatedAt bozulmasın
                     _context.Update(taskItem);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_context.TaskItems.Any(e => e.Id == taskItem.Id))
-                        return NotFound();
-                    else
-                        throw;
+                    if (!TaskItemExists(taskItem.Id)) return NotFound();
+                    throw;
                 }
-                return RedirectToAction(nameof(Index));
+
+                return RedirectToAction("Details", "Projects", new { id = taskItem.ProjectId });
             }
 
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", taskItem.ProjectId);
+            await FillDropdowns(taskItem.ProjectId);
             return View(taskItem);
         }
 
@@ -130,13 +140,39 @@ namespace wep_programlama_odev.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var taskItem = await _context.TaskItems.FindAsync(id);
-            if (taskItem != null)
-            {
-                _context.TaskItems.Remove(taskItem);
-            }
+            if (taskItem == null) return RedirectToAction(nameof(Index));
 
+            var projectId = taskItem.ProjectId;
+
+            _context.TaskItems.Remove(taskItem);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction("Details", "Projects", new { id = projectId });
+        }
+
+        private bool TaskItemExists(int id)
+        {
+            return _context.TaskItems.Any(e => e.Id == id);
+        }
+
+        private async Task FillDropdowns(int? selectedProjectId)
+        {
+            var projects = await _context.Projects
+                .OrderBy(p => p.Name)
+                .ToListAsync();
+
+            ViewData["ProjectId"] = new SelectList(projects, "Id", "Name", selectedProjectId);
+
+            var statusList = Enum.GetValues(typeof(TaskStatusEnum))
+                .Cast<TaskStatusEnum>()
+                .Select(s => new SelectListItem
+                {
+                    Value = s.ToString(),
+                    Text = s.ToString()
+                })
+                .ToList();
+
+            ViewData["Status"] = statusList;
         }
     }
 }
