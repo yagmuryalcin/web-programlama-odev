@@ -13,7 +13,8 @@ using TaskStatusEnum = wep_programlama_odev.Models.TaskStatus;
 
 namespace wep_programlama_odev.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    // Login olan herkes görebilsin (Index/Details)
+    [Authorize]
     public class TaskItemsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -23,7 +24,7 @@ namespace wep_programlama_odev.Controllers
             _context = context;
         }
 
-        // GET: TaskItems
+        // GET: TaskItems  (HER LOGIN OLAN GÖREBİLİR)
         public async Task<IActionResult> Index()
         {
             var taskItems = await _context.TaskItems
@@ -34,7 +35,7 @@ namespace wep_programlama_odev.Controllers
             return View(taskItems);
         }
 
-        // GET: TaskItems/Details/5
+        // GET: TaskItems/Details/5  (HER LOGIN OLAN GÖREBİLİR)
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -48,8 +49,8 @@ namespace wep_programlama_odev.Controllers
             return View(taskItem);
         }
 
-        // GET: TaskItems/Create
-        // /TaskItems/Create?projectId=1 gibi gelirse Project seçili gelsin
+        // GET: TaskItems/Create  (SADECE ADMIN)
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(int? projectId)
         {
             await FillDropdowns(projectId);
@@ -57,16 +58,17 @@ namespace wep_programlama_odev.Controllers
             var model = new TaskItem
             {
                 ProjectId = projectId ?? 0,
-                Status = TaskStatusEnum.Todo, // varsayılan
+                Status = TaskStatusEnum.Todo,
                 CreatedAt = DateTime.Now
             };
 
             return View(model);
         }
 
-        // POST: TaskItems/Create
+        // POST: TaskItems/Create  (SADECE ADMIN)
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Title,Description,Status,ProjectId")] TaskItem taskItem)
         {
             if (ModelState.IsValid)
@@ -75,7 +77,6 @@ namespace wep_programlama_odev.Controllers
                 _context.Add(taskItem);
                 await _context.SaveChangesAsync();
 
-                // Proje detayına geri dönmek daha mantıklı
                 return RedirectToAction("Details", "Projects", new { id = taskItem.ProjectId });
             }
 
@@ -83,7 +84,8 @@ namespace wep_programlama_odev.Controllers
             return View(taskItem);
         }
 
-        // GET: TaskItems/Edit/5
+        // GET: TaskItems/Edit/5  (SADECE ADMIN)
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -95,9 +97,10 @@ namespace wep_programlama_odev.Controllers
             return View(taskItem);
         }
 
-        // POST: TaskItems/Edit/5
+        // POST: TaskItems/Edit/5  (SADECE ADMIN)
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Status,ProjectId,CreatedAt")] TaskItem taskItem)
         {
             if (id != taskItem.Id) return NotFound();
@@ -122,7 +125,8 @@ namespace wep_programlama_odev.Controllers
             return View(taskItem);
         }
 
-        // GET: TaskItems/Delete/5
+        // GET: TaskItems/Delete/5  (SADECE ADMIN)
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -136,9 +140,10 @@ namespace wep_programlama_odev.Controllers
             return View(taskItem);
         }
 
-        // POST: TaskItems/Delete/5
+        // POST: TaskItems/Delete/5  (SADECE ADMIN)
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var taskItem = await _context.TaskItems.FindAsync(id);

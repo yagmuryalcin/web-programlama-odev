@@ -1,48 +1,87 @@
 ﻿@model wep_programlama_odev.Models.TaskItem
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Görev Detayı";
+    bool isAdmin = User.IsInRole("Admin");
+
+    string badgeClass = Model.Status switch
+    {
+        wep_programlama_odev.Models.TaskStatus.Todo => "bg-secondary",
+        wep_programlama_odev.Models.TaskStatus.InProgress => "bg-warning text-dark",
+        wep_programlama_odev.Models.TaskStatus.Done => "bg-success",
+        _ => "bg-dark"
+    };
+
+    string statusText = Model.Status switch
+    {
+        wep_programlama_odev.Models.TaskStatus.Todo => "Yapılacak",
+        wep_programlama_odev.Models.TaskStatus.InProgress => "Devam Ediyor",
+        wep_programlama_odev.Models.TaskStatus.Done => "Tamamlandı",
+        _ => Model.Status.ToString()
+    };
 }
 
-<h1>Details</h1>
+<h1 class="page-title">Görev Detayı</h1>
 
-<div>
-    <h4>TaskItem</h4>
+<div class="card-custom">
+    <h4 class="mb-3">Görev Bilgileri</h4>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
+
+    <dl class="row mb-0">
+        <dt class="col-sm-3">Başlık</dt>
+        <dd class="col-sm-9">@Model.Title</dd>
+
+        <dt class="col-sm-3">Açıklama</dt>
+        <dd class="col-sm-9">
+            @if (string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <span class="text-muted">Açıklama girilmemiş.</span>
+            }
+            else
+            {
+                @Model.Description
+            }
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
+
+        <dt class="col-sm-3">Durum</dt>
+        <dd class="col-sm-9">
+            <span class="badge @badgeClass">@statusText</span>
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Project)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Project.Name)
+
+        <dt class="col-sm-3">Oluşturulma Tarihi</dt>
+        <dd class="col-sm-9">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</dd>
+
+        <dt class="col-sm-3">Proje</dt>
+        <dd class="col-sm-9">
+            @if (Model.Project == null)
+            {
+                <span class="text-muted">Proje bilgisi yok</span>
+            }
+            else
+            {
+                @Model.Project.Name
+            }
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="mt-2">
+    @if (isAdmin)
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+            Düzenle
+        </a>
+    }
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Listeye Dön
+    </a>
+
+    @* İstersen proje detayına dönüş de ekleyelim *@
+    @if (Model.Project != null)
+    {
+        <a asp-controller="Projects" asp-action="Details" asp-route-id="@Model.ProjectId" class="btn btn-outline-primary">
+            Proje Detayına Git
+        </a>
+    }
 </div>

@@ -1,22 +1,46 @@
-html {
-  font-size: 14px;
+/* Genel sayfa düzeni */
+.page-title {
+    margin-bottom: 20px;
+    font-weight: 600;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+/* Kart görünümü */
+.card-custom {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 25px;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+/* Tablo iyileþtirme */
+.table thead th {
+    background-color: #f8f9fa;
+    font-weight: 600;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+.table td, .table th {
+    vertical-align: middle;
 }
 
-body {
-  margin-bottom: 60px;
+/* Aksiyon linkleri */
+.action-links a {
+    margin-right: 8px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+    .action-links a:hover {
+        text-decoration: underline;
+    }
+
+/* Status badge ek stil */
+.badge {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+}
+
+/* Üst istatistik alaný */
+.stats-bar span {
+    font-size: 0.95rem;
 }

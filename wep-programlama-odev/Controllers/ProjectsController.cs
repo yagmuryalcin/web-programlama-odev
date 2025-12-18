@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using wep_programlama_odev.Data;
 using wep_programlama_odev.Models;
-using Microsoft.AspNetCore.Authorization;
-
 
 namespace wep_programlama_odev.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize] // login şart
     public class ProjectsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,13 +19,13 @@ namespace wep_programlama_odev.Controllers
             _context = context;
         }
 
-        // GET: Projects
+        // GET: Projects  (HER LOGIN OLAN GÖREBİLİR)
         public async Task<IActionResult> Index()
         {
             return View(await _context.Projects.ToListAsync());
         }
 
-        // GET: Projects/Details/5
+        // GET: Projects/Details/5  (HER LOGIN OLAN GÖREBİLİR)
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -40,15 +39,17 @@ namespace wep_programlama_odev.Controllers
             return View(project);
         }
 
-        // GET: Projects/Create
+        // GET: Projects/Create  (SADECE ADMIN)
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Projects/Create
+        // POST: Projects/Create  (SADECE ADMIN)
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Name,Description")] Project project)
         {
             if (ModelState.IsValid)
@@ -61,7 +62,8 @@ namespace wep_programlama_odev.Controllers
             return View(project);
         }
 
-        // GET: Projects/Edit/5
+        // GET: Projects/Edit/5  (SADECE ADMIN)
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -72,9 +74,10 @@ namespace wep_programlama_odev.Controllers
             return View(project);
         }
 
-        // POST: Projects/Edit/5
+        // POST: Projects/Edit/5  (SADECE ADMIN)
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description")] Project project)
         {
             if (id != project.Id) return NotFound();
@@ -89,9 +92,7 @@ namespace wep_programlama_odev.Controllers
             {
                 try
                 {
-                    // CreatedAt'ı koru
                     project.CreatedAt = existing.CreatedAt;
-
                     _context.Update(project);
                     await _context.SaveChangesAsync();
                 }
@@ -99,7 +100,6 @@ namespace wep_programlama_odev.Controllers
                 {
                     if (!_context.Projects.Any(e => e.Id == project.Id))
                         return NotFound();
-
                     throw;
                 }
 
@@ -109,7 +109,8 @@ namespace wep_programlama_odev.Controllers
             return View(project);
         }
 
-        // GET: Projects/Delete/5
+        // GET: Projects/Delete/5  (SADECE ADMIN)
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -120,9 +121,10 @@ namespace wep_programlama_odev.Controllers
             return View(project);
         }
 
-        // POST: Projects/Delete/5
+        // POST: Projects/Delete/5  (SADECE ADMIN)
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var project = await _context.Projects.FindAsync(id);

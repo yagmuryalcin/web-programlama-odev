@@ -1,61 +1,61 @@
 ﻿@model wep_programlama_odev.Models.TaskItem
 
 @{
-    ViewData["Title"] = "Create Task";
+    ViewData["Title"] = "Yeni Görev Oluştur";
 }
 
-<h1>Create</h1>
+<h1 class="page-title">Yeni Görev Oluştur</h1>
 
-<h4>TaskItem</h4>
-<hr />
+<div class="card-custom">
+    <h4 class="mb-3">Görev Bilgileri</h4>
+    <hr />
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <!-- Title -->
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
+                <!-- Başlık -->
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label">Başlık</label>
+                    <input asp-for="Title" class="form-control" placeholder="Örn: Veritabanı tablolarını oluştur" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
 
-            <!-- Description -->
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
+                <!-- Açıklama -->
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label">Açıklama</label>
+                    <textarea asp-for="Description" class="form-control" rows="3" placeholder="İstersen detay ekleyebilirsin..."></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
 
-            <!-- Status -->
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <select asp-for="Status"
-                        class="form-control"
-                        asp-items="Html.GetEnumSelectList<wep_programlama_odev.Models.TaskStatus>()">
-                    <option value="">-- Select Status --</option>
-                </select>
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
+                <!-- Durum -->
+                <div class="mb-3">
+                    <label asp-for="Status" class="form-label">Durum</label>
+                    <select asp-for="Status" class="form-select">
+                        <option value="Todo">Yapılacak</option>
+                        <option value="InProgress">Devam Ediyor</option>
+                        <option value="Done">Tamamlandı</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
 
-            <!-- Project -->
-            <div class="form-group">
-                <label asp-for="ProjectId" class="control-label"></label>
-                <select asp-for="ProjectId"
-                        class="form-control"
-                        asp-items="ViewBag.ProjectId">
-                    <option value="">-- Select Project --</option>
-                </select>
-                <span asp-validation-for="ProjectId" class="text-danger"></span>
-            </div>
+                <!-- Proje -->
+                <div class="mb-3">
+                    <label asp-for="ProjectId" class="form-label">Proje</label>
+                    <select asp-for="ProjectId" class="form-select" asp-items="ViewBag.ProjectId">
+                        <option value="">-- Proje Seçin --</option>
+                    </select>
+                    <span asp-validation-for="ProjectId" class="text-danger"></span>
+                </div>
 
-            <!-- Buttons -->
-            <div class="form-group mt-3">
-                <input type="submit" value="Create" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-            </div>
-        </form>
+                <!-- Butonlar -->
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-success">Kaydet</button>
+                    <a asp-action="Index" class="btn btn-secondary">Listeye Dön</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 

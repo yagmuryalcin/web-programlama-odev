@@ -1,66 +1,105 @@
 ﻿@model IEnumerable<wep_programlama_odev.Models.TaskItem>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Görevler";
+    bool isAdmin = User.IsInRole("Admin");
 }
 
-<h1>Index</h1>
+<h1 class="page-title">Görevler</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (isAdmin)
+{
+    <div class="mb-3">
+        <a asp-action="Create" class="btn btn-success">
+            ➕ Yeni Görev Oluştur
+        </a>
+    </div>
+}
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Status</th>
-            <th>CreatedAt</th>
-            <th>Project</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            // Status'a göre görsel sınıflar
-            string badgeClass = item.Status switch
-            {
-                wep_programlama_odev.Models.TaskStatus.Todo => "bg-secondary",
-                wep_programlama_odev.Models.TaskStatus.InProgress => "bg-warning text-dark",
-                wep_programlama_odev.Models.TaskStatus.Done => "bg-success",
-                _ => "bg-dark"
-            };
-
-            string statusText = item.Status switch
-            {
-                wep_programlama_odev.Models.TaskStatus.Todo => "To Do",
-                wep_programlama_odev.Models.TaskStatus.InProgress => "In Progress",
-                wep_programlama_odev.Models.TaskStatus.Done => "Done",
-                _ => item.Status.ToString()
-            };
-
-            bool isDone = item.Status == wep_programlama_odev.Models.TaskStatus.Done;
-
+<div class="card-custom">
+    <table class="table table-hover">
+        <thead>
             <tr>
-                <td>
-                    <span class="@(isDone ? "text-decoration-line-through text-muted" : "")">
-                        @item.Title
-                    </span>
-                </td>
-                <td>@item.Description</td>
-                <td>
-                    <span class="badge @badgeClass">@statusText</span>
-                </td>
-                <td>@item.CreatedAt</td>
-                <td>@item.Project?.Name</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
+                <th>Başlık</th>
+                <th>Açıklama</th>
+                <th>Durum</th>
+                <th>Tarih</th>
+                <th>Proje</th>
+                <th>İşlemler</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                // Status'a göre görsel sınıflar
+                string badgeClass = item.Status switch
+                {
+                    wep_programlama_odev.Models.TaskStatus.Todo => "bg-secondary",
+                    wep_programlama_odev.Models.TaskStatus.InProgress => "bg-warning text-dark",
+                    wep_programlama_odev.Models.TaskStatus.Done => "bg-success",
+                    _ => "bg-dark"
+                };
+
+                string statusText = item.Status switch
+                {
+                    wep_programlama_odev.Models.TaskStatus.Todo => "Yapılacak",
+                    wep_programlama_odev.Models.TaskStatus.InProgress => "Devam Ediyor",
+                    wep_programlama_odev.Models.TaskStatus.Done => "Tamamlandı",
+                    _ => item.Status.ToString()
+                };
+
+                bool isDone = item.Status == wep_programlama_odev.Models.TaskStatus.Done;
+
+                <tr>
+                    <td>
+                        <span class="@(isDone ? "text-decoration-line-through text-muted" : "")">
+                            @item.Title
+                        </span>
+                    </td>
+                    <td>
+                        @if (string.IsNullOrWhiteSpace(item.Description))
+                        {
+                            <span class="text-muted">Açıklama yok</span>
+                        }
+                        else
+                        {
+                            @item.Description
+                        }
+                    </td>
+                    <td>
+                        <span class="badge @badgeClass">@statusText</span>
+                    </td>
+                    <td>@item.CreatedAt.ToString("dd.MM.yyyy")</td>
+                    <td>
+                        @if (item.Project == null)
+                        {
+                            <span class="text-muted">Proje yok</span>
+                        }
+                        else
+                        {
+                            @item.Project.Name
+                        }
+                    </td>
+                    <td class="action-links">
+                        <a asp-action="Details" asp-route-id="@item.Id" class="text-primary">Detay</a>
+
+                        @if (isAdmin)
+                        {
+                            <text> | </text>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="text-warning">Düzenle</a>
+                            <text> | </text>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="text-danger">Sil</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!Model.Any())
+    {
+        <p class="text-muted text-center mb-0">
+            Henüz oluşturulmuş bir görev bulunmamaktadır.
+        </p>
+    }
+</div>
