@@ -5,17 +5,17 @@
 
     string badgeClass = Model.Status switch
     {
-        wep_programlama_odev.Models.TaskStatus.Todo => "bg-secondary",
-        wep_programlama_odev.Models.TaskStatus.InProgress => "bg-warning text-dark",
-        wep_programlama_odev.Models.TaskStatus.Done => "bg-success",
+        wep_programlama_odev.Models.TaskStatus.Beklemede => "bg-secondary",
+        wep_programlama_odev.Models.TaskStatus.DevamEdiyor => "bg-warning text-dark",
+        wep_programlama_odev.Models.TaskStatus.Tamamlandi => "bg-success",
         _ => "bg-dark"
     };
 
     string statusText = Model.Status switch
     {
-        wep_programlama_odev.Models.TaskStatus.Todo => "Yapılacak",
-        wep_programlama_odev.Models.TaskStatus.InProgress => "Devam Ediyor",
-        wep_programlama_odev.Models.TaskStatus.Done => "Tamamlandı",
+        wep_programlama_odev.Models.TaskStatus.Beklemede => "Yapılacak",
+        wep_programlama_odev.Models.TaskStatus.DevamEdiyor => "Devam Ediyor",
+        wep_programlama_odev.Models.TaskStatus.Tamamlandi => "Tamamlandı",
         _ => Model.Status.ToString()
     };
 }

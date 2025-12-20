@@ -558,7 +558,7 @@ var i,
 	expando = "sizzle" + 1 * new Date(),
 	preferredDoc = window.document,
 	dirruns = 0,
-	done = 0,
+	Tamamlandi = 0,
 	classCache = createCache(),
 	tokenCache = createCache(),
 	compilerCache = createCache(),
@@ -791,7 +791,7 @@ function Sizzle( selector, context, results, seed ) {
 						if ( ( elem = context.getElementById( m ) ) ) {
 
 							// Support: IE, Opera, Webkit
-							// TODO: identify versions
+							// Beklemede: identify versions
 							// getElementById can match elements by name instead of ID
 							if ( elem.id === m ) {
 								results.push( elem );
@@ -805,7 +805,7 @@ function Sizzle( selector, context, results, seed ) {
 					} else {
 
 						// Support: IE, Opera, Webkit
-						// TODO: identify versions
+						// Beklemede: identify versions
 						// getElementById can match elements by name instead of ID
 						if ( newContext && ( elem = newContext.getElementById( m ) ) &&
 							contains( context, elem ) &&
@@ -1948,7 +1948,7 @@ Expr = Sizzle.selectors = {
 									}
 								}
 
-								// Reverse direction for :only-* (if we haven't yet done so)
+								// Reverse direction for :only-* (if we haven't yet Tamamlandi so)
 								start = dir = type === "only" && !start && "nextSibling";
 							}
 							return true;
@@ -2399,7 +2399,7 @@ function addCombinator( matcher, combinator, base ) {
 		skip = combinator.next,
 		key = skip || dir,
 		checkNonElements = base && key === "parentNode",
-		doneName = done++;
+		TamamlandiName = Tamamlandi++;
 
 	return combinator.first ?
 
@@ -2416,7 +2416,7 @@ function addCombinator( matcher, combinator, base ) {
 		// Check against all ancestor/preceding elements
 		function( elem, context, xml ) {
 			var oldCache, uniqueCache, outerCache,
-				newCache = [ dirruns, doneName ];
+				newCache = [ dirruns, TamamlandiName ];
 
 			// We can't set arbitrary data on XML nodes, so they don't benefit from combinator caching
 			if ( xml ) {
@@ -2440,7 +2440,7 @@ function addCombinator( matcher, combinator, base ) {
 						if ( skip && skip === elem.nodeName.toLowerCase() ) {
 							elem = elem[ dir ] || elem;
 						} else if ( ( oldCache = uniqueCache[ key ] ) &&
-							oldCache[ 0 ] === dirruns && oldCache[ 1 ] === doneName ) {
+							oldCache[ 0 ] === dirruns && oldCache[ 1 ] === TamamlandiName ) {
 
 							// Assign to newCache so results back-propagate to previous elements
 							return ( newCache[ 2 ] = oldCache[ 2 ] );
@@ -2449,7 +2449,7 @@ function addCombinator( matcher, combinator, base ) {
 							// Reuse newcache so results back-propagate to previous elements
 							uniqueCache[ key ] = newCache;
 
-							// A match means we're done; a fail means we have to keep checking
+							// A match means we're Tamamlandi; a fail means we have to keep checking
 							if ( ( newCache[ 2 ] = matcher( elem, context, xml ) ) ) {
 								return true;
 							}
@@ -3507,14 +3507,14 @@ jQuery.Callbacks = function( options ) {
 				}
 			}
 
-			// Forget the data if we're done with it
+			// Forget the data if we're Tamamlandi with it
 			if ( !options.memory ) {
 				memory = false;
 			}
 
 			firing = false;
 
-			// Clean up if we're done firing for good
+			// Clean up if we're Tamamlandi firing for good
 			if ( locked ) {
 
 				// Keep an empty list if we have data for future add calls
@@ -3663,7 +3663,7 @@ function adoptValue( value, resolve, reject, noValue ) {
 
 		// Check for promise aspect first to privilege synchronous behavior
 		if ( value && isFunction( ( method = value.promise ) ) ) {
-			method.call( value ).done( resolve ).fail( reject );
+			method.call( value ).Tamamlandi( resolve ).fail( reject );
 
 		// Other thenables
 		} else if ( value && isFunction( ( method = value.then ) ) ) {
@@ -3698,7 +3698,7 @@ jQuery.extend( {
 				// ... .then handlers, argument index, [final state]
 				[ "notify", "progress", jQuery.Callbacks( "memory" ),
 					jQuery.Callbacks( "memory" ), 2 ],
-				[ "resolve", "done", jQuery.Callbacks( "once memory" ),
+				[ "resolve", "Tamamlandi", jQuery.Callbacks( "once memory" ),
 					jQuery.Callbacks( "once memory" ), 0, "resolved" ],
 				[ "reject", "fail", jQuery.Callbacks( "once memory" ),
 					jQuery.Callbacks( "once memory" ), 1, "rejected" ]
@@ -3709,7 +3709,7 @@ jQuery.extend( {
 					return state;
 				},
 				always: function() {
-					deferred.done( arguments ).fail( arguments );
+					deferred.Tamamlandi( arguments ).fail( arguments );
 					return this;
 				},
 				"catch": function( fn ) {
@@ -3717,24 +3717,24 @@ jQuery.extend( {
 				},
 
 				// Keep pipe for back-compat
-				pipe: function( /* fnDone, fnFail, fnProgress */ ) {
+				pipe: function( /* fnTamamlandi, fnFail, fnProgress */ ) {
 					var fns = arguments;
 
 					return jQuery.Deferred( function( newDefer ) {
 						jQuery.each( tuples, function( _i, tuple ) {
 
-							// Map tuples (progress, done, fail) to arguments (done, fail, progress)
+							// Map tuples (progress, Tamamlandi, fail) to arguments (Tamamlandi, fail, progress)
 							var fn = isFunction( fns[ tuple[ 4 ] ] ) && fns[ tuple[ 4 ] ];
 
 							// deferred.progress(function() { bind to newDefer or newDefer.notify })
-							// deferred.done(function() { bind to newDefer or newDefer.resolve })
+							// deferred.Tamamlandi(function() { bind to newDefer or newDefer.resolve })
 							// deferred.fail(function() { bind to newDefer or newDefer.reject })
 							deferred[ tuple[ 1 ] ]( function() {
 								var returned = fn && fn.apply( this, arguments );
 								if ( returned && isFunction( returned.promise ) ) {
 									returned.promise()
 										.progress( newDefer.notify )
-										.done( newDefer.resolve )
+										.Tamamlandi( newDefer.resolve )
 										.fail( newDefer.reject );
 								} else {
 									newDefer[ tuple[ 0 ] + "With" ](
@@ -3926,7 +3926,7 @@ jQuery.extend( {
 				stateString = tuple[ 5 ];
 
 			// promise.progress = list.add
-			// promise.done = list.add
+			// promise.Tamamlandi = list.add
 			// promise.fail = list.add
 			promise[ tuple[ 1 ] ] = list.add;
 
@@ -3983,7 +3983,7 @@ jQuery.extend( {
 			func.call( deferred, deferred );
 		}
 
-		// All done!
+		// All Tamamlandi!
 		return deferred;
 	},
 
@@ -4017,7 +4017,7 @@ jQuery.extend( {
 
 		// Single- and empty arguments are adopted like Promise.resolve
 		if ( remaining <= 1 ) {
-			adoptValue( singleValue, primary.done( updateFunc( i ) ).resolve, primary.reject,
+			adoptValue( singleValue, primary.Tamamlandi( updateFunc( i ) ).resolve, primary.reject,
 				!remaining );
 
 			// Use .then() to unwrap secondary thenables (cf. gh-3000)
@@ -4395,7 +4395,7 @@ var dataUser = new Data();
 //	2. Improve the module's maintainability by reducing the storage
 //		paths to a single mechanism.
 //	3. Use the same single mechanism to support "private" and "user" data.
-//	4. _Never_ expose "private" data to user code (TODO: Drop _data, _removeData)
+//	4. _Never_ expose "private" data to user code (Beklemede: Drop _data, _removeData)
 //	5. Avoid exposing implementation details on user objects (eg. expando properties)
 //	6. Provide a clear path for implementation upgrade to WeakMap in 2014
 
@@ -4463,7 +4463,7 @@ jQuery.extend( {
 		dataUser.remove( elem, name );
 	},
 
-	// TODO: Now that all calls to _data and _removeData have been replaced
+	// Beklemede: Now that all calls to _data and _removeData have been replaced
 	// with direct calls to dataPriv methods, these can be deprecated.
 	_data: function( elem, name, data ) {
 		return dataPriv.access( elem, name, data );
@@ -4590,7 +4590,7 @@ jQuery.extend( {
 			};
 
 		// If the fx queue is dequeued, always remove the progress sentinel
-		if ( fn === "inprogress" ) {
+		if ( fn === "DevamEdiyor" ) {
 			fn = queue.shift();
 			startLength--;
 		}
@@ -4600,7 +4600,7 @@ jQuery.extend( {
 			// Add a progress sentinel to prevent the fx queue from being
 			// automatically dequeued
 			if ( type === "fx" ) {
-				queue.unshift( "inprogress" );
+				queue.unshift( "DevamEdiyor" );
 			}
 
 			// Clear up the last queue stop function
@@ -4646,7 +4646,7 @@ jQuery.fn.extend( {
 				// Ensure a hooks for this queue
 				jQuery._queueHooks( this, type );
 
-				if ( type === "fx" && queue[ 0 ] !== "inprogress" ) {
+				if ( type === "fx" && queue[ 0 ] !== "DevamEdiyor" ) {
 					jQuery.dequeue( this, type );
 				}
 			} );
@@ -7267,12 +7267,12 @@ jQuery.fx.step = {};
 
 
 var
-	fxNow, inProgress,
+	fxNow, DevamEdiyor,
 	rfxtypes = /^(?:toggle|show|hide)$/,
 	rrun = /queueHooks$/;
 
 function schedule() {
-	if ( inProgress ) {
+	if ( DevamEdiyor ) {
 		if ( document.hidden === false && window.requestAnimationFrame ) {
 			window.requestAnimationFrame( schedule );
 		} else {
@@ -7320,7 +7320,7 @@ function createTween( value, prop, animation ) {
 	for ( ; index < length; index++ ) {
 		if ( ( tween = collection[ index ].call( animation, prop, value ) ) ) {
 
-			// We're done with this property
+			// We're Tamamlandi with this property
 			return tween;
 		}
 	}
@@ -7423,7 +7423,7 @@ function defaultPrefilter( elem, props, opts ) {
 
 				// Restore the original display value at the end of pure show/hide animations
 				if ( !propTween ) {
-					anim.done( function() {
+					anim.Tamamlandi( function() {
 						style.display = restoreDisplay;
 					} );
 					if ( restoreDisplay == null ) {
@@ -7471,7 +7471,7 @@ function defaultPrefilter( elem, props, opts ) {
 
 			/* eslint-disable no-loop-func */
 
-			anim.done( function() {
+			anim.Tamamlandi( function() {
 
 				/* eslint-enable no-loop-func */
 
@@ -7645,7 +7645,7 @@ function Animation( elem, properties, options ) {
 	// Attach callbacks from options
 	animation
 		.progress( animation.opts.progress )
-		.done( animation.opts.done, animation.opts.complete )
+		.Tamamlandi( animation.opts.Tamamlandi, animation.opts.complete )
 		.fail( animation.opts.fail )
 		.always( animation.opts.always );
 
@@ -7902,7 +7902,7 @@ jQuery.fx.tick = function() {
 	for ( ; i < timers.length; i++ ) {
 		timer = timers[ i ];
 
-		// Run the timer and safely remove it when done (allowing for external removal)
+		// Run the timer and safely remove it when Tamamlandi (allowing for external removal)
 		if ( !timer() && timers[ i ] === timer ) {
 			timers.splice( i--, 1 );
 		}
@@ -7921,16 +7921,16 @@ jQuery.fx.timer = function( timer ) {
 
 jQuery.fx.interval = 13;
 jQuery.fx.start = function() {
-	if ( inProgress ) {
+	if ( DevamEdiyor ) {
 		return;
 	}
 
-	inProgress = true;
+	DevamEdiyor = true;
 	schedule();
 };
 
 jQuery.fx.stop = function() {
-	inProgress = null;
+	DevamEdiyor = null;
 };
 
 jQuery.fx.speeds = {
@@ -9508,7 +9508,7 @@ jQuery.extend( {
 					if ( transport ) {
 						transport.abort( finalText );
 					}
-					done( 0, finalText );
+					Tamamlandi( 0, finalText );
 					return this;
 				}
 			};
@@ -9647,7 +9647,7 @@ jQuery.extend( {
 		if ( s.beforeSend &&
 			( s.beforeSend.call( callbackContext, jqXHR, s ) === false || completed ) ) {
 
-			// Abort if not done already and return
+			// Abort if not Tamamlandi already and return
 			return jqXHR.abort();
 		}
 
@@ -9656,7 +9656,7 @@ jQuery.extend( {
 
 		// Install callbacks on deferreds
 		completeDeferred.add( s.complete );
-		jqXHR.done( s.success );
+		jqXHR.Tamamlandi( s.success );
 		jqXHR.fail( s.error );
 
 		// Get transport
@@ -9664,7 +9664,7 @@ jQuery.extend( {
 
 		// If no transport, we auto-abort
 		if ( !transport ) {
-			done( -1, "No Transport" );
+			Tamamlandi( -1, "No Transport" );
 		} else {
 			jqXHR.readyState = 1;
 
@@ -9687,7 +9687,7 @@ jQuery.extend( {
 
 			try {
 				completed = false;
-				transport.send( requestHeaders, done );
+				transport.send( requestHeaders, Tamamlandi );
 			} catch ( e ) {
 
 				// Rethrow post-completion exceptions
@@ -9696,12 +9696,12 @@ jQuery.extend( {
 				}
 
 				// Propagate others as results
-				done( -1, e );
+				Tamamlandi( -1, e );
 			}
 		}
 
-		// Callback for when everything is done
-		function done( status, nativeStatusText, responses, headers ) {
+		// Callback for when everything is Tamamlandi
+		function Tamamlandi( status, nativeStatusText, responses, headers ) {
 			var isSuccess, success, error, response, modified,
 				statusText = nativeStatusText;
 
@@ -10390,7 +10390,7 @@ jQuery.fn.load = function( url, params, callback ) {
 			type: type || "GET",
 			dataType: "html",
 			data: params
-		} ).done( function( responseText ) {
+		} ).Tamamlandi( function( responseText ) {
 
 			// Save response for use in complete callback
 			response = arguments;

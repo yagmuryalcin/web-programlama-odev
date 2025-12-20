@@ -5,9 +5,9 @@
 
     var tasks = Model.TaskItems?.ToList() ?? new List<wep_programlama_odev.Models.TaskItem>();
     var total = tasks.Count;
-    var doneCount = tasks.Count(t => t.Status == wep_programlama_odev.Models.TaskStatus.Done);
-    var inProgressCount = tasks.Count(t => t.Status == wep_programlama_odev.Models.TaskStatus.InProgress);
-    var todoCount = tasks.Count(t => t.Status == wep_programlama_odev.Models.TaskStatus.Todo);
+    var TamamlandiCount = tasks.Count(t => t.Status == wep_programlama_odev.Models.TaskStatus.Tamamlandi);
+    var DevamEdiyorCount = tasks.Count(t => t.Status == wep_programlama_odev.Models.TaskStatus.DevamEdiyor);
+    var BeklemedeCount = tasks.Count(t => t.Status == wep_programlama_odev.Models.TaskStatus.Beklemede);
 
     bool isAdmin = User.IsInRole("Admin");
 }
@@ -59,9 +59,9 @@
     {
         <div class="mb-3 stats-bar">
             <span class="me-3"><strong>Toplam:</strong> @total</span>
-            <span class="me-3"><strong>Yapılacak:</strong> @todoCount</span>
-            <span class="me-3"><strong>Devam Ediyor:</strong> @inProgressCount</span>
-            <span class="me-3"><strong>Tamamlandı:</strong> @doneCount</span>
+            <span class="me-3"><strong>Yapılacak:</strong> @BeklemedeCount</span>
+            <span class="me-3"><strong>Devam Ediyor:</strong> @DevamEdiyorCount</span>
+            <span class="me-3"><strong>Tamamlandı:</strong> @TamamlandiCount</span>
         </div>
     }
 
@@ -85,25 +85,25 @@
                 {
                     string badgeClass = item.Status switch
                     {
-                        wep_programlama_odev.Models.TaskStatus.Todo => "bg-secondary",
-                        wep_programlama_odev.Models.TaskStatus.InProgress => "bg-warning text-dark",
-                        wep_programlama_odev.Models.TaskStatus.Done => "bg-success",
+                        wep_programlama_odev.Models.TaskStatus.Beklemede => "bg-secondary",
+                        wep_programlama_odev.Models.TaskStatus.DevamEdiyor => "bg-warning text-dark",
+                        wep_programlama_odev.Models.TaskStatus.Tamamlandi => "bg-success",
                         _ => "bg-dark"
                     };
 
                     string statusText = item.Status switch
                     {
-                        wep_programlama_odev.Models.TaskStatus.Todo => "Yapılacak",
-                        wep_programlama_odev.Models.TaskStatus.InProgress => "Devam Ediyor",
-                        wep_programlama_odev.Models.TaskStatus.Done => "Tamamlandı",
+                        wep_programlama_odev.Models.TaskStatus.Beklemede => "Yapılacak",
+                        wep_programlama_odev.Models.TaskStatus.DevamEdiyor => "Devam Ediyor",
+                        wep_programlama_odev.Models.TaskStatus.Tamamlandi => "Tamamlandı",
                         _ => item.Status.ToString()
                     };
 
-                    bool isDone = item.Status == wep_programlama_odev.Models.TaskStatus.Done;
+                    bool isTamamlandi = item.Status == wep_programlama_odev.Models.TaskStatus.Tamamlandi;
 
                     <tr>
                         <td>
-                            <span class="@(isDone ? "text-decoration-line-through text-muted" : "")">
+                            <span class="@(isTamamlandi ? "text-decoration-line-through text-muted" : "")">
                                 @item.Title
                             </span>
                         </td>

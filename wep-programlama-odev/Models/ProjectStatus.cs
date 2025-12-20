@@ -1,6 +1,6 @@
 ﻿namespace wep_programlama_odev.Models
 {
-    public enum TaskStatus
+    public enum ProjectStatus
     {
         Baslanmadi = 0,
         Beklemede = 1,

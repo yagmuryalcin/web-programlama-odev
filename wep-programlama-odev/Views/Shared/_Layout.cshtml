@@ -1,60 +1,101 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - wep_programlama_odev</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/wep_programlama_odev.styles.css" asp-append-version="true" />
 </head>
+
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">wep_programlama_odev</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+    <div class="app-shell">
 
-                        @* ✅ Admin menüsü *@
-                        @if (User.IsInRole("Admin"))
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-title">PROJE YÖNETİM</div>
+                <div class="brand-subtitle">wep_programlama_odev</div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"
+                   asp-controller="Home" asp-action="Index">
+                    <span class="sidebar-icon">🏠</span>
+                    <span>Anasayfa</span>
+                </a>
+
+                @* Projeler/Görevler: login olan herkes görebilir, CRUD admin *@
+                <a class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Projects" ? "active" : "")"
+                   asp-controller="Projects" asp-action="Index">
+                    <span class="sidebar-icon">📁</span>
+                    <span>Projeler</span>
+                </a>
+
+                @* Görevler sayfası sadece Admin ise menüde görünsün (sende controller Admin) *@
+                @if (User.IsInRole("Admin"))
+                {
+                    <a class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "TaskItems" ? "active" : "")"
+                       asp-controller="TaskItems" asp-action="Index">
+                        <span class="sidebar-icon">✅</span>
+                        <span>Görevler</span>
+                    </a>
+                }
+
+                <div class="sidebar-sep"></div>
+
+                <a class="sidebar-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Privacy" ? "active" : "")"
+                   asp-controller="Home" asp-action="Privacy">
+                    <span class="sidebar-icon">🔒</span>
+                    <span>Gizlilik</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-footer-card">
+                    <div class="footer-title">Hesap</div>
+                    <div class="footer-subtitle">
+                        @if (User?.Identity?.IsAuthenticated == true)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Projects" asp-action="Index">Projects</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="TaskItems" asp-action="Index">Tasks</a>
-                            </li>
+                            <span>@User.Identity.Name</span>
                         }
-                    </ul>
-
-                    <partial name="_LoginPartial" />
+                        else
+                        {
+                            <span>Giriş yapılmadı</span>
+                        }
+                    </div>
                 </div>
             </div>
-        </nav>
-    </header>
+        </aside>
 
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+        <!-- MAIN -->
+        <div class="main">
+            <!-- TOPBAR -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <span class="topbar-page">@ViewData["Title"]</span>
+                </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - wep_programlama_odev - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                <div class="topbar-right">
+                    <partial name="_LoginPartial" />
+                </div>
+            </header>
+
+            <!-- CONTENT -->
+            <main class="content">
+                @RenderBody()
+            </main>
+
+            <!-- FOOTER -->
+            <footer class="app-footer">
+                <div class="text-muted">
+                    © @DateTime.Now.Year - wep_programlama_odev
+                </div>
+            </footer>
         </div>
-    </footer>
+    </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

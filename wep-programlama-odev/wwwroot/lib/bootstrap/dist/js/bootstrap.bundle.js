@@ -1001,7 +1001,7 @@
       return [].concat(...Element.prototype.querySelectorAll.call(element, selector));
     },
 
-    findOne(selector, element = document.documentElement) {
+    finTamamlandi(selector, element = document.documentElement) {
       return Element.prototype.querySelector.call(element, selector);
     },
 
@@ -1154,7 +1154,7 @@
       this.touchStartX = 0;
       this.touchDeltaX = 0;
       this._config = this._getConfig(config);
-      this._indicatorsElement = SelectorEngine.findOne(SELECTOR_INDICATORS, this._element);
+      this._indicatorsElement = SelectorEngine.finTamamlandi(SELECTOR_INDICATORS, this._element);
       this._touchSupported = 'ontouchstart' in document.documentElement || navigator.maxTouchPoints > 0;
       this._pointerEvent = Boolean(window.PointerEvent);
 
@@ -1192,7 +1192,7 @@
         this._isPaused = true;
       }
 
-      if (SelectorEngine.findOne(SELECTOR_NEXT_PREV, this._element)) {
+      if (SelectorEngine.finTamamlandi(SELECTOR_NEXT_PREV, this._element)) {
         triggerTransitionEnd(this._element);
         this.cycle(true);
       }
@@ -1219,7 +1219,7 @@
     }
 
     to(index) {
-      this._activeElement = SelectorEngine.findOne(SELECTOR_ACTIVE_ITEM, this._element);
+      this._activeElement = SelectorEngine.finTamamlandi(SELECTOR_ACTIVE_ITEM, this._element);
 
       const activeIndex = this._getItemIndex(this._activeElement);
 
@@ -1367,7 +1367,7 @@
     _triggerSlideEvent(relatedTarget, eventDirectionName) {
       const targetIndex = this._getItemIndex(relatedTarget);
 
-      const fromIndex = this._getItemIndex(SelectorEngine.findOne(SELECTOR_ACTIVE_ITEM, this._element));
+      const fromIndex = this._getItemIndex(SelectorEngine.finTamamlandi(SELECTOR_ACTIVE_ITEM, this._element));
 
       return EventHandler.trigger(this._element, EVENT_SLIDE, {
         relatedTarget,
@@ -1379,7 +1379,7 @@
 
     _setActiveIndicatorElement(element) {
       if (this._indicatorsElement) {
-        const activeIndicator = SelectorEngine.findOne(SELECTOR_ACTIVE$1, this._indicatorsElement);
+        const activeIndicator = SelectorEngine.finTamamlandi(SELECTOR_ACTIVE$1, this._indicatorsElement);
         activeIndicator.classList.remove(CLASS_NAME_ACTIVE$2);
         activeIndicator.removeAttribute('aria-current');
         const indicators = SelectorEngine.find(SELECTOR_INDICATOR, this._indicatorsElement);
@@ -1395,7 +1395,7 @@
     }
 
     _updateInterval() {
-      const element = this._activeElement || SelectorEngine.findOne(SELECTOR_ACTIVE_ITEM, this._element);
+      const element = this._activeElement || SelectorEngine.finTamamlandi(SELECTOR_ACTIVE_ITEM, this._element);
 
       if (!element) {
         return;
@@ -1414,7 +1414,7 @@
     _slide(directionOrOrder, element) {
       const order = this._directionToOrder(directionOrOrder);
 
-      const activeElement = SelectorEngine.findOne(SELECTOR_ACTIVE_ITEM, this._element);
+      const activeElement = SelectorEngine.finTamamlandi(SELECTOR_ACTIVE_ITEM, this._element);
 
       const activeElementIndex = this._getItemIndex(activeElement);
 
@@ -1710,7 +1710,7 @@
         actives = SelectorEngine.find(SELECTOR_ACTIVES, this._config.parent).filter(elem => !children.includes(elem)); // remove children if greater depth
       }
 
-      const container = SelectorEngine.findOne(this._selector);
+      const container = SelectorEngine.finTamamlandi(this._selector);
 
       if (actives.length) {
         const tempActiveData = actives.find(elem => container !== elem);
@@ -4546,7 +4546,7 @@
     constructor(element, config) {
       super(element);
       this._config = this._getConfig(config);
-      this._dialog = SelectorEngine.findOne(SELECTOR_DIALOG, this._element);
+      this._dialog = SelectorEngine.finTamamlandi(SELECTOR_DIALOG, this._element);
       this._backdrop = this._initializeBackDrop();
       this._focustrap = this._initializeFocusTrap();
       this._isShown = false;
@@ -4683,7 +4683,7 @@
     _showElement(relatedTarget) {
       const isAnimated = this._isAnimated();
 
-      const modalBody = SelectorEngine.findOne(SELECTOR_MODAL_BODY, this._dialog);
+      const modalBody = SelectorEngine.finTamamlandi(SELECTOR_MODAL_BODY, this._dialog);
 
       if (!this._element.parentNode || this._element.parentNode.nodeType !== Node.ELEMENT_NODE) {
         // Don't move modal's DOM position
@@ -5149,7 +5149,7 @@
       }
     }); // avoid conflict when clicking a toggler of an offcanvas, while another is open
 
-    const allReadyOpen = SelectorEngine.findOne(OPEN_SELECTOR);
+    const allReadyOpen = SelectorEngine.finTamamlandi(OPEN_SELECTOR);
 
     if (allReadyOpen && allReadyOpen !== target) {
       Offcanvas.getInstance(allReadyOpen).hide();
@@ -5628,7 +5628,7 @@
     }
 
     _sanitizeAndSetContent(template, content, selector) {
-      const templateElement = SelectorEngine.findOne(selector, template);
+      const templateElement = SelectorEngine.finTamamlandi(selector, template);
 
       if (!content && templateElement) {
         templateElement.remove();
@@ -6172,7 +6172,7 @@
       const targets = SelectorEngine.find(SELECTOR_LINK_ITEMS, this._config.target);
       targets.map(element => {
         const targetSelector = getSelectorFromElement(element);
-        const target = targetSelector ? SelectorEngine.findOne(targetSelector) : null;
+        const target = targetSelector ? SelectorEngine.finTamamlandi(targetSelector) : null;
 
         if (target) {
           const targetBCR = target.getBoundingClientRect();
@@ -6262,11 +6262,11 @@
       this._clear();
 
       const queries = SELECTOR_LINK_ITEMS.split(',').map(selector => `${selector}[data-bs-target="${target}"],${selector}[href="${target}"]`);
-      const link = SelectorEngine.findOne(queries.join(','), this._config.target);
+      const link = SelectorEngine.finTamamlandi(queries.join(','), this._config.target);
       link.classList.add(CLASS_NAME_ACTIVE$1);
 
       if (link.classList.contains(CLASS_NAME_DROPDOWN_ITEM)) {
-        SelectorEngine.findOne(SELECTOR_DROPDOWN_TOGGLE$1, link.closest(SELECTOR_DROPDOWN$1)).classList.add(CLASS_NAME_ACTIVE$1);
+        SelectorEngine.finTamamlandi(SELECTOR_DROPDOWN_TOGGLE$1, link.closest(SELECTOR_DROPDOWN$1)).classList.add(CLASS_NAME_ACTIVE$1);
       } else {
         SelectorEngine.parents(link, SELECTOR_NAV_LIST_GROUP$1).forEach(listGroup => {
           // Set triggered links parents as active
@@ -6435,7 +6435,7 @@
     _transitionComplete(element, active, callback) {
       if (active) {
         active.classList.remove(CLASS_NAME_ACTIVE);
-        const dropdownChild = SelectorEngine.findOne(SELECTOR_DROPDOWN_ACTIVE_CHILD, active.parentNode);
+        const dropdownChild = SelectorEngine.finTamamlandi(SELECTOR_DROPDOWN_ACTIVE_CHILD, active.parentNode);
 
         if (dropdownChild) {
           dropdownChild.classList.remove(CLASS_NAME_ACTIVE);

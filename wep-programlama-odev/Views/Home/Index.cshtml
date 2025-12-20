@@ -1,8 +1,62 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model wep_programlama_odev.Models.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Anasayfa";
+
+    // Proje sayıları
+    var pBaslanmadi = Model?.ProjeBaslanmadi ?? 0;
+    var pBeklemede = Model?.ProjeBeklemede ?? 0;
+    var pDevamEdiyor = Model?.ProjeDevamEdiyor ?? 0;
+    var pTamamlandi = Model?.ProjeTamamlandi ?? 0;
+    var pToplam = Model?.ProjeToplam ?? (pBaslanmadi + pBeklemede + pDevamEdiyor + pTamamlandi);
+
+    // Görev sayıları (Beklemede/DevamEdiyor/Tamamlandi var)
+    var gBeklemede = Model?.GorevBeklemede ?? 0;      // Beklemede
+    var gDevamEdiyor = Model?.GorevDevamEdiyor ?? 0;  // DevamEdiyor
+    var gTamamlandi = Model?.GorevTamamlandi ?? 0;    // Tamamlandi
+    var gToplam = Model?.GorevToplam ?? (gBeklemede + gDevamEdiyor + gTamamlandi);
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="dashboard-grid">
+
+    <section class="stat-card">
+        <div class="stat-card-header">Proje İstatistikleri</div>
+        <div class="stat-card-body">
+            <div class="pill-row">
+                <span class="pill pill-red"><span class="num">@pBaslanmadi</span> Başlanmadı</span>
+                <span class="pill pill-orange"><span class="num">@pBeklemede</span> Beklemede</span>
+                <span class="pill pill-blue"><span class="num">@pDevamEdiyor</span> Devam Ediyor</span>
+                <span class="pill pill-green"><span class="num">@pTamamlandi</span> Tamamlandı</span>
+                <span class="pill pill-purple"><span class="num">@pToplam</span> Toplam</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="stat-card">
+        <div class="stat-card-header">Görev İstatistikleri</div>
+        <div class="stat-card-body">
+            <div class="pill-row">
+                <span class="pill pill-orange"><span class="num">@gBeklemede</span> Beklemede</span>
+                <span class="pill pill-blue"><span class="num">@gDevamEdiyor</span> Devam Ediyor</span>
+                <span class="pill pill-green"><span class="num">@gTamamlandi</span> Tamamlandı</span>
+                <span class="pill pill-purple"><span class="num">@gToplam</span> Toplam</span>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<div class="mt-4">
+    <div class="stat-card">
+        <div class="stat-card-header">Kısa Yol</div>
+        <div class="stat-card-body d-flex gap-2 flex-wrap">
+            <a class="btn btn-outline-primary" asp-controller="Projects" asp-action="Index">Projeleri Gör</a>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <a class="btn btn-primary" asp-controller="Projects" asp-action="Create">Yeni Proje Oluştur</a>
+                <a class="btn btn-outline-secondary" asp-controller="TaskItems" asp-action="Index">Görevleri Yönet</a>
+            }
+        </div>
+    </div>
 </div>

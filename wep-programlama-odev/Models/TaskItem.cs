@@ -15,7 +15,7 @@ namespace wep_programlama_odev.Models
         public string? Description { get; set; }
 
         [Required(ErrorMessage = "Durum seçiniz.")]
-        public TaskStatus Status { get; set; } = TaskStatus.Todo;
+        public TaskStatus Status { get; set; } = TaskStatus.Beklemede;
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 

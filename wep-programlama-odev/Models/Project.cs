@@ -17,6 +17,10 @@ namespace wep_programlama_odev.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+        // ✅ Proje durumu
+        [Required]
+        public ProjectStatus Status { get; set; } = ProjectStatus.Baslanmadi;
+
         // Navigation
         public ICollection<TaskItem> TaskItems { get; set; } = new List<TaskItem>();
     }

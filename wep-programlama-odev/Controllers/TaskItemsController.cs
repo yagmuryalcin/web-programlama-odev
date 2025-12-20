@@ -58,7 +58,7 @@ namespace wep_programlama_odev.Controllers
             var model = new TaskItem
             {
                 ProjectId = projectId ?? 0,
-                Status = TaskStatusEnum.Todo,
+                Status = TaskStatusEnum.Beklemede,
                 CreatedAt = DateTime.Now
             };
 
