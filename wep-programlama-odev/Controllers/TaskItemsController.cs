@@ -27,9 +27,9 @@ namespace wep_programlama_odev.Controllers
             _userManager = userManager;
         }
 
-        // GET: TaskItems
-        // Admin: hepsini görür
-        // Admin değilse: sadece kendine atananları görür
+        // ✅ GET: TaskItems (liste)
+        // Admin/Manager: hepsini görür
+        // TeamMember: sadece kendine atananları görür
         public async Task<IActionResult> Index()
         {
             var query = _context.TaskItems
@@ -38,7 +38,7 @@ namespace wep_programlama_odev.Controllers
                 .OrderByDescending(t => t.CreatedAt)
                 .AsQueryable();
 
-            if (!User.IsInRole("Admin"))
+            if (User.IsInRole("TeamMember"))
             {
                 var myId = _userManager.GetUserId(User);
                 query = query.Where(t => t.AssignedUserId == myId);
@@ -48,9 +48,60 @@ namespace wep_programlama_odev.Controllers
             return View(taskItems);
         }
 
-        // GET: TaskItems/Details/5
-        // Admin: girer
-        // Admin değilse: sadece kendine atanan göreve girebilir
+        // ✅ KANBAN: GET TaskItems/Board
+        // Admin/Manager: hepsi
+        // TeamMember: sadece kendisi
+        public async Task<IActionResult> Board()
+        {
+            var query = _context.TaskItems
+                .Include(t => t.Project)
+                .Include(t => t.AssignedUser)
+                .OrderByDescending(t => t.CreatedAt)
+                .AsQueryable();
+
+            if (User.IsInRole("TeamMember"))
+            {
+                var myId = _userManager.GetUserId(User);
+                query = query.Where(t => t.AssignedUserId == myId);
+            }
+
+            var all = await query.ToListAsync();
+
+            var vm = new KanbanBoardVm
+            {
+                Beklemede = all.Where(x => x.Status == TaskStatusEnum.Beklemede).ToList(),
+                DevamEdiyor = all.Where(x => x.Status == TaskStatusEnum.DevamEdiyor).ToList(),
+                Tamamlandi = all.Where(x => x.Status == TaskStatusEnum.Tamamlandi).ToList()
+            };
+
+            return View(vm);
+        }
+
+        // ✅ KANBAN: Durum Güncelle
+        // Admin/Manager: herkesin görevini güncelleyebilir
+        // TeamMember: sadece kendi görevi
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStatus(int id, TaskStatusEnum status)
+        {
+            var task = await _context.TaskItems.FirstOrDefaultAsync(t => t.Id == id);
+            if (task == null) return NotFound();
+
+            if (User.IsInRole("TeamMember"))
+            {
+                var myId = _userManager.GetUserId(User);
+                if (task.AssignedUserId != myId)
+                    return Forbid();
+            }
+
+            task.Status = status;
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Board));
+        }
+
+        // ✅ GET: TaskItems/Details/5
+        // TeamMember: sadece kendine atanan göreve girebilir
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -64,22 +115,25 @@ namespace wep_programlama_odev.Controllers
 
             if (taskItem == null) return NotFound();
 
-            if (!User.IsInRole("Admin"))
+            if (User.IsInRole("TeamMember"))
             {
                 var myId = _userManager.GetUserId(User);
                 if (taskItem.AssignedUserId != myId)
                     return Forbid();
             }
 
-            // ✅ Eğer view'da ViewBag.Comments kullanıyorsan dursun:
-            ViewBag.Comments = taskItem.TaskComments?
+            var comments = await _context.TaskComments
+                .Where(c => c.TaskItemId == taskItem.Id)
+                .Include(c => c.User)
                 .OrderByDescending(c => c.CreatedAt)
-                .ToList() ?? new List<TaskComment>();
+                .ToListAsync();
+
+            ViewBag.Comments = comments;
 
             return View(taskItem);
         }
 
-        // GET: TaskItems/Create (SADECE ADMIN)
+        // ✅ GET: TaskItems/Create (SADECE ADMIN)
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(int? projectId)
         {
@@ -95,67 +149,78 @@ namespace wep_programlama_odev.Controllers
             return View(model);
         }
 
-        // POST: TaskItems/Create (SADECE ADMIN)
+        // ✅ POST: TaskItems/Create (SADECE ADMIN)
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,Status,ProjectId,AssignedUserId")] TaskItem taskItem)
+        public async Task<IActionResult> Create([Bind("Title,Description,Status,ProjectId,AssignedUserId")] TaskItem taskItem)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                taskItem.CreatedAt = DateTime.Now;
-                _context.Add(taskItem);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction("Details", "Projects", new { id = taskItem.ProjectId });
+                await FillDropdowns(taskItem.ProjectId, taskItem.AssignedUserId);
+                return View(taskItem);
             }
 
-            await FillDropdowns(taskItem.ProjectId, taskItem.AssignedUserId);
-            return View(taskItem);
+            taskItem.CreatedAt = DateTime.Now;
+
+            // "" gelirse null yap (Atama yok)
+            if (string.IsNullOrWhiteSpace(taskItem.AssignedUserId))
+                taskItem.AssignedUserId = null;
+
+            _context.TaskItems.Add(taskItem);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", "Projects", new { id = taskItem.ProjectId });
         }
 
-        // GET: TaskItems/Edit/5 (SADECE ADMIN)
+        // ✅ GET: TaskItems/Edit/5 (SADECE ADMIN)
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
 
-            var taskItem = await _context.TaskItems.FindAsync(id);
+            var taskItem = await _context.TaskItems.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id);
             if (taskItem == null) return NotFound();
 
             await FillDropdowns(taskItem.ProjectId, taskItem.AssignedUserId);
             return View(taskItem);
         }
 
-        // POST: TaskItems/Edit/5 (SADECE ADMIN)
+        // ✅ POST: TaskItems/Edit/5 (SADECE ADMIN)
+        // 🔥 EN ÖNEMLİ DÜZELTME: _context.Update(taskItem) YOK
+        // DB'den entity çekip sadece alanları güncelliyoruz.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Status,ProjectId,CreatedAt,AssignedUserId")] TaskItem taskItem)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Status,ProjectId,AssignedUserId")] TaskItem formModel)
         {
-            if (id != taskItem.Id) return NotFound();
+            if (id != formModel.Id) return NotFound();
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(taskItem);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TaskItemExists(taskItem.Id)) return NotFound();
-                    throw;
-                }
-
-                return RedirectToAction("Details", "Projects", new { id = taskItem.ProjectId });
+                await FillDropdowns(formModel.ProjectId, formModel.AssignedUserId);
+                return View(formModel);
             }
 
-            await FillDropdowns(taskItem.ProjectId, taskItem.AssignedUserId);
-            return View(taskItem);
+            var taskInDb = await _context.TaskItems.FirstOrDefaultAsync(t => t.Id == id);
+            if (taskInDb == null) return NotFound();
+
+            taskInDb.Title = formModel.Title;
+            taskInDb.Description = formModel.Description;
+            taskInDb.Status = formModel.Status;
+            taskInDb.ProjectId = formModel.ProjectId;
+
+            // "" gelirse null yap
+            taskInDb.AssignedUserId = string.IsNullOrWhiteSpace(formModel.AssignedUserId)
+                ? null
+                : formModel.AssignedUserId;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", "Projects", new { id = taskInDb.ProjectId });
         }
 
-        // GET: TaskItems/Delete/5 (SADECE ADMIN)
+        // ✅ GET: TaskItems/Delete/5 (SADECE ADMIN)
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -171,13 +236,13 @@ namespace wep_programlama_odev.Controllers
             return View(taskItem);
         }
 
-        // POST: TaskItems/Delete/5 (SADECE ADMIN)
+        // ✅ POST: TaskItems/Delete/5 (SADECE ADMIN)
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var taskItem = await _context.TaskItems.FindAsync(id);
+            var taskItem = await _context.TaskItems.FirstOrDefaultAsync(t => t.Id == id);
             if (taskItem == null) return RedirectToAction(nameof(Index));
 
             var projectId = taskItem.ProjectId;
@@ -188,12 +253,6 @@ namespace wep_programlama_odev.Controllers
             return RedirectToAction("Details", "Projects", new { id = projectId });
         }
 
-        private bool TaskItemExists(int id)
-        {
-            return _context.TaskItems.Any(e => e.Id == id);
-        }
-
-        // Dropdownlar: Project + Status + AssignedUser
         private async Task FillDropdowns(int? selectedProjectId, string? selectedAssignedUserId)
         {
             var projects = await _context.Projects
@@ -202,7 +261,6 @@ namespace wep_programlama_odev.Controllers
 
             ViewData["ProjectId"] = new SelectList(projects, "Id", "Name", selectedProjectId);
 
-            // Status dropdown
             var statusList = Enum.GetValues(typeof(TaskStatusEnum))
                 .Cast<TaskStatusEnum>()
                 .Select(s => new SelectListItem
@@ -214,37 +272,48 @@ namespace wep_programlama_odev.Controllers
 
             ViewData["Status"] = statusList;
 
-            // ÖNEMLİ: Dropdown boş kalmasın diye iki seçenek var:
-
-            // 1) Sadece TeamMember rolündekiler:
+            // ✅ Dropdown'da Value = Id olmalı (kayıt doğru gitsin)
+            // Text: Email varsa Email, yoksa UserName
             var teamMembers = await _userManager.GetUsersInRoleAsync("TeamMember");
+            var managers = await _userManager.GetUsersInRoleAsync("Manager");
 
-            // Eğer teamMembers boşsa (rol atanmamış kullanıcılar yüzünden), fallback olarak tüm kullanıcıları göster:
-            List<IdentityUser> assignableUsers;
-            if (teamMembers != null && teamMembers.Count > 0)
-            {
-                assignableUsers = teamMembers.ToList();
-            }
-            else
-            {
-                assignableUsers = await _userManager.Users
-                    .OrderBy(u => u.Email)
-                    .ToListAsync();
-            }
+            var assignableUsers = teamMembers
+                .Concat(managers)
+                .GroupBy(u => u.Id)
+                .Select(g => g.First())
+                .OrderBy(u => u.Email ?? u.UserName)
+                .Select(u => new SelectListItem
+                {
+                    Value = u.Id,
+                    Text = string.IsNullOrWhiteSpace(u.Email) ? u.UserName : u.Email
+                })
+                .ToList();
 
-            // Dropdown’da Email daha anlamlı (istersen UserName yaparız)
-            ViewData["AssignedUserId"] = new SelectList(assignableUsers, "Id", "UserName", selectedAssignedUserId);
+            // "Atama yok" seçeneği
+            assignableUsers.Insert(0, new SelectListItem { Value = "", Text = "— Atama yok —" });
+
+            ViewData["AssignedUserId"] = new SelectList(assignableUsers, "Value", "Text", selectedAssignedUserId);
         }
 
         private static string StatusToText(TaskStatusEnum s)
         {
             return s switch
             {
-                TaskStatusEnum.Beklemede => "Yapılacak",
+                TaskStatusEnum.Beklemede => "Beklemede",
                 TaskStatusEnum.DevamEdiyor => "Devam Ediyor",
                 TaskStatusEnum.Tamamlandi => "Tamamlandı",
+                TaskStatusEnum.Baslanmadi => "Başlanmadı",
+                
                 _ => s.ToString()
             };
         }
+    }
+
+    // ✅ Kanban ViewModel (aynı dosyada dursun şimdilik)
+    public class KanbanBoardVm
+    {
+        public List<TaskItem> Beklemede { get; set; } = new();
+        public List<TaskItem> DevamEdiyor { get; set; } = new();
+        public List<TaskItem> Tamamlandi { get; set; } = new();
     }
 }

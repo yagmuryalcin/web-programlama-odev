@@ -1,0 +1,191 @@
+﻿@model wep_programlama_odev.Controllers.KanbanBoardVm
+
+@{
+    ViewData["Title"] = "Görev Panosu (Kanban)";
+}
+
+<h1 class="page-title">Görev Panosu</h1>
+
+<div class="d-flex gap-2 mb-3">
+    <a class="btn btn-outline-secondary" asp-action="Index">Liste Görünümü</a>
+
+    @if (User.IsInRole("Admin"))
+    {
+        <a class="btn btn-success" asp-action="Create">
+            + Yeni Görev Oluştur
+        </a>
+    }
+</div>
+
+<div class="row g-3">
+    <!-- BEKLEMEDE -->
+    <div class="col-md-4">
+        <div class="card-custom">
+            <h4 class="mb-3">Beklemede</h4>
+
+            @if (Model.Beklemede.Count == 0)
+            {
+                <div class="text-muted">Bu sütunda görev yok.</div>
+            }
+            else
+            {
+                foreach (var t in Model.Beklemede)
+                {
+                    <div class="border rounded p-3 mb-2">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fw-bold">@t.Title</div>
+                                <div class="text-muted small">
+                                    Proje: @(t.Project?.Name ?? "—")
+                                </div>
+                                <div class="text-muted small">
+                                    Atanan: @(t.AssignedUser?.UserName ?? "—")
+                                </div>
+                            </div>
+
+                            <a class="btn btn-sm btn-outline-primary"
+                               asp-action="Details" asp-route-id="@t.Id">
+                                Detay
+                            </a>
+                        </div>
+
+                        <div class="mt-2 d-flex gap-2 align-items-center">
+                            <form asp-action="UpdateStatus" method="post" class="d-flex gap-2 align-items-center">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@t.Id" />
+
+                                <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                    <option value="Beklemede" selected>Beklemede</option>
+                                    <option value="DevamEdiyor">Devam Ediyor</option>
+                                    <option value="Tamamlandi">Tamamlandı</option>
+                                </select>
+                            </form>
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   asp-action="Edit" asp-route-id="@t.Id">
+                                    Düzenle
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <!-- DEVAM EDİYOR -->
+    <div class="col-md-4">
+        <div class="card-custom">
+            <h4 class="mb-3">Devam Ediyor</h4>
+
+            @if (Model.DevamEdiyor.Count == 0)
+            {
+                <div class="text-muted">Bu sütunda görev yok.</div>
+            }
+            else
+            {
+                foreach (var t in Model.DevamEdiyor)
+                {
+                    <div class="border rounded p-3 mb-2">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fw-bold">@t.Title</div>
+                                <div class="text-muted small">
+                                    Proje: @(t.Project?.Name ?? "—")
+                                </div>
+                                <div class="text-muted small">
+                                    Atanan: @(t.AssignedUser?.UserName ?? "—")
+                                </div>
+                            </div>
+
+                            <a class="btn btn-sm btn-outline-primary"
+                               asp-action="Details" asp-route-id="@t.Id">
+                                Detay
+                            </a>
+                        </div>
+
+                        <div class="mt-2 d-flex gap-2 align-items-center">
+                            <form asp-action="UpdateStatus" method="post" class="d-flex gap-2 align-items-center">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@t.Id" />
+
+                                <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                    <option value="Beklemede">Beklemede</option>
+                                    <option value="DevamEdiyor" selected>Devam Ediyor</option>
+                                    <option value="Tamamlandi">Tamamlandı</option>
+                                </select>
+                            </form>
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   asp-action="Edit" asp-route-id="@t.Id">
+                                    Düzenle
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <!-- TAMAMLANDI -->
+    <div class="col-md-4">
+        <div class="card-custom">
+            <h4 class="mb-3">Tamamlandı</h4>
+
+            @if (Model.Tamamlandi.Count == 0)
+            {
+                <div class="text-muted">Bu sütunda görev yok.</div>
+            }
+            else
+            {
+                foreach (var t in Model.Tamamlandi)
+                {
+                    <div class="border rounded p-3 mb-2">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fw-bold">@t.Title</div>
+                                <div class="text-muted small">
+                                    Proje: @(t.Project?.Name ?? "—")
+                                </div>
+                                <div class="text-muted small">
+                                    Atanan: @(t.AssignedUser?.UserName ?? "—")
+                                </div>
+                            </div>
+
+                            <a class="btn btn-sm btn-outline-primary"
+                               asp-action="Details" asp-route-id="@t.Id">
+                                Detay
+                            </a>
+                        </div>
+
+                        <div class="mt-2 d-flex gap-2 align-items-center">
+                            <form asp-action="UpdateStatus" method="post" class="d-flex gap-2 align-items-center">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@t.Id" />
+
+                                <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                    <option value="Beklemede">Beklemede</option>
+                                    <option value="DevamEdiyor">Devam Ediyor</option>
+                                    <option value="Tamamlandi" selected>Tamamlandı</option>
+                                </select>
+                            </form>
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   asp-action="Edit" asp-route-id="@t.Id">
+                                    Düzenle
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

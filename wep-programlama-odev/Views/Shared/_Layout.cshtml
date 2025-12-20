@@ -33,10 +33,17 @@
                     <span>Projeler</span>
                 </a>
 
-                <a class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "TaskItems" ? "active" : "")"
+                <a class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "TaskItems" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")"
                    asp-controller="TaskItems" asp-action="Index">
                     <span class="sidebar-icon">✅</span>
                     <span>Görevler</span>
+                </a>
+
+                <!-- ✅ KANBAN (Görev Panosu) -->
+                <a class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "TaskItems" && ViewContext.RouteData.Values["action"]?.ToString() == "Board" ? "active" : "")"
+                   asp-controller="TaskItems" asp-action="Board">
+                    <span class="sidebar-icon">🧩</span>
+                    <span>Görev Panosu</span>
                 </a>
 
                 @* Kullanıcılar sadece Admin menüde görünsün *@
@@ -51,7 +58,7 @@
 
                 <div class="sidebar-sep"></div>
 
-                <a class="sidebar-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Privacy" ? "active" : "")"
+                <a class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "Privacy" ? "active" : "")"
                    asp-controller="Home" asp-action="Privacy">
                     <span class="sidebar-icon">🔒</span>
                     <span>Gizlilik</span>
@@ -74,10 +81,10 @@
                     </div>
                 </div>
 
-                <div class="mt-2">
-                    <partial name="_LoginPartial" />
-                </div>
+                <!-- ✅ Menüyle aynı stil: Giriş Yap / Çıkış Yap -->
+                <partial name="_LoginPartial" />
             </div>
+
         </aside>
 
         <!-- MAIN -->

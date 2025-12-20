@@ -8,16 +8,21 @@ namespace wep_programlama_odev.Models
     {
         public int Id { get; set; }
 
+        // ✅ TEK ve NET Foreign Key
         [Required]
         public int TaskItemId { get; set; }
-        public TaskItem? TaskItem { get; set; }
 
+        // ✅ Navigation
+        public TaskItem TaskItem { get; set; } = null!;
+
+        // ✅ Yorumu yazan kullanıcı
         [Required]
         public string UserId { get; set; } = string.Empty;
-        public IdentityUser? User { get; set; }
 
-        [Required(ErrorMessage = "Yorum boş olamaz.")]
-        [StringLength(1000, ErrorMessage = "Yorum en fazla 1000 karakter olabilir.")]
+        public IdentityUser User { get; set; } = null!;
+
+        [Required]
+        [StringLength(1000)]
         public string Text { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using wep_programlama_odev.Data;
 
@@ -11,9 +12,11 @@ using wep_programlama_odev.Data;
 namespace wep_programlama_odev.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251220193909_FixTaskCommentRelation")]
+    partial class FixTaskCommentRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -290,6 +293,9 @@ namespace wep_programlama_odev.Data.Migrations
                     b.Property<int>("TaskItemId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("TaskItemId1")
+                        .HasColumnType("int");
+
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -302,6 +308,8 @@ namespace wep_programlama_odev.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("TaskItemId");
+
+                    b.HasIndex("TaskItemId1");
 
                     b.HasIndex("UserId");
 
@@ -419,10 +427,14 @@ namespace wep_programlama_odev.Data.Migrations
             modelBuilder.Entity("wep_programlama_odev.Models.TaskComment", b =>
                 {
                     b.HasOne("wep_programlama_odev.Models.TaskItem", "TaskItem")
-                        .WithMany("TaskComments")
+                        .WithMany()
                         .HasForeignKey("TaskItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("wep_programlama_odev.Models.TaskItem", null)
+                        .WithMany("TaskComments")
+                        .HasForeignKey("TaskItemId1");
 
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()

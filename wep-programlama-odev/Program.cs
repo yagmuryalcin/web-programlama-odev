@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using wep_programlama_odev.Data;
 
@@ -18,7 +18,6 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     options.SignIn.RequireConfirmedAccount = false;
 
     // Şifre politikan çok sıkıysa seed sırasında hata almamak için gevşetebilirsin.
-    // İstersen bu kısmı aynen bırakabilir ya da aşağıyı açabilirsin:
     // options.Password.RequireDigit = false;
     // options.Password.RequiredLength = 6;
     // options.Password.RequireNonAlphanumeric = false;
@@ -32,6 +31,7 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+
 // ✅ SEED: Role + Admin User
 using (var scope = app.Services.CreateScope())
 {
@@ -39,15 +39,19 @@ using (var scope = app.Services.CreateScope())
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
     const string adminRole = "Admin";
+    const string teamMemberRole = "TeamMember";
+    const string managerRole = "Manager";
 
-    // 1) Admin rolü yoksa oluştur
-    if (!await roleManager.RoleExistsAsync(adminRole))
+    // 1) Roller yoksa oluştur
+    foreach (var role in new[] { adminRole, teamMemberRole, managerRole })
     {
-        await roleManager.CreateAsync(new IdentityRole(adminRole));
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
     }
 
     // 2) Admin kullanıcı yoksa oluştur
-    // Burayı kendine göre düzenleyebilirsin
     const string adminEmail = "admin@wep.com";
     const string adminPassword = "Admin123!";
 
@@ -62,8 +66,6 @@ using (var scope = app.Services.CreateScope())
         };
 
         var createResult = await userManager.CreateAsync(adminUser, adminPassword);
-
-        // Şifre politikası tutmazsa hata burada patlar (Debug için önemli)
         if (!createResult.Succeeded)
         {
             var errors = string.Join(" | ", createResult.Errors.Select(e => e.Description));
@@ -71,12 +73,14 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    // 3) Admin kullanıcısını role ekle (değilse)
+    // 3) Admin rolünü garanti et
     if (!await userManager.IsInRoleAsync(adminUser, adminRole))
     {
         await userManager.AddToRoleAsync(adminUser, adminRole);
     }
 }
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -4,15 +4,19 @@ namespace wep_programlama_odev.Models
 {
     public class CreateUserVm
     {
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; } = "";
+        [Required(ErrorMessage = "E-posta zorunludur.")]
+        [EmailAddress(ErrorMessage = "Geçerli bir e-posta girin.")]
+        [Display(Name = "Email")]
+        public string Email { get; set; } = string.Empty;
 
-        [Required]
-        [MinLength(6)]
-        public string Password { get; set; } = "";
+        [Required(ErrorMessage = "Şifre zorunludur.")]
+        [DataType(DataType.Password)]
+        [MinLength(6, ErrorMessage = "Şifre en az 6 karakter olmalıdır.")]
+        [Display(Name = "Şifre")]
+        public string Password { get; set; } = string.Empty;
 
-        // "Admin" veya "TeamMember"
-        public string? Role { get; set; }
+        [Required(ErrorMessage = "Rol seçilmelidir.")]
+        [Display(Name = "Rol")]
+        public string Role { get; set; } = string.Empty;
     }
 }

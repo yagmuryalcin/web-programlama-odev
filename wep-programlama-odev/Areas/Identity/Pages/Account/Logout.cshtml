@@ -1,0 +1,17 @@
+﻿@page
+@model wep_programlama_odev.Areas.Identity.Pages.Account.LogoutModel
+@{
+    ViewData["Title"] = "Çıkış Yap";
+}
+
+<h1 class="page-title">Çıkış Yap</h1>
+
+<div class="card-custom">
+    <h4 class="mb-3">Çıkış yapmak üzeresiniz</h4>
+    <hr />
+
+    <form method="post">
+        <button type="submit" class="btn btn-danger">Çıkış Yap</button>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary ms-2">Vazgeç</a>
+    </form>
+</div>

@@ -13,8 +13,6 @@ namespace wep_programlama_odev.Data
 
         public DbSet<Project> Projects => Set<Project>();
         public DbSet<TaskItem> TaskItems => Set<TaskItem>();
-
-        // ✅ Yeni
         public DbSet<ProjectMember> ProjectMembers => Set<ProjectMember>();
         public DbSet<TaskComment> TaskComments => Set<TaskComment>();
 
@@ -42,10 +40,10 @@ namespace wep_programlama_odev.Data
                 .HasForeignKey(t => t.AssignedUserId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            // TaskComment ilişkileri
+            // ✅ TaskItem - TaskComment ilişkisi (NET)
             builder.Entity<TaskComment>()
                 .HasOne(c => c.TaskItem)
-                .WithMany()
+                .WithMany(t => t.TaskComments)
                 .HasForeignKey(c => c.TaskItemId)
                 .OnDelete(DeleteBehavior.Cascade);
 

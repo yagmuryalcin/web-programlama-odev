@@ -1,16 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace wep_programlama_odev.Models
 {
     public class EditUserRoleVm
     {
-        public string UserId { get; set; } = "";
-        public string UserName { get; set; } = "";
-        public string Email { get; set; } = "";
+        [Required]
+        public string UserId { get; set; } = default!;
 
-        public List<string> AllRoles { get; set; } = new();
+        public string? UserName { get; set; }
+        public string? Email { get; set; }
 
-        [Required(ErrorMessage = "Rol seçiniz.")]
+        // Seçili rol
+        [Required(ErrorMessage = "Lütfen bir rol seçiniz.")]
         public string? SelectedRole { get; set; }
+
+        // Dropdown için tüm roller
+        public List<string> AllRoles { get; set; } = new();
     }
 }

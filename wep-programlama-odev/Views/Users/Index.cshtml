@@ -30,7 +30,7 @@
                             <div class="text-muted">@u.Email</div>
                         </td>
                         <td>
-                            @(u.Roles.Count == 0 ? "—" : string.Join(", ", u.Roles))
+                            @(u.Roles == null || u.Roles.Count == 0 ? "—" : string.Join(", ", u.Roles))
                         </td>
                         <td class="text-end">
                             <a class="btn btn-outline-secondary btn-sm"

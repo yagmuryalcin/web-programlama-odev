@@ -1,0 +1,105 @@
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Logging;
+
+namespace wep_programlama_odev.Areas.Identity.Pages.Account
+{
+    [AllowAnonymous]
+    public class RegisterModel : PageModel
+    {
+        private readonly UserManager<IdentityUser>
+    _userManager;
+    private readonly SignInManager<IdentityUser>
+        _signInManager;
+        private readonly ILogger<RegisterModel>
+            _logger;
+            private readonly IEmailSender _emailSender;
+
+            public RegisterModel(
+            UserManager<IdentityUser>
+                userManager,
+                SignInManager<IdentityUser>
+                    signInManager,
+                    ILogger<RegisterModel>
+                        logger,
+                        IEmailSender emailSender)
+                        {
+                        _userManager = userManager;
+                        _signInManager = signInManager;
+                        _logger = logger;
+                        _emailSender = emailSender;
+                        }
+
+                        [BindProperty]
+                        public InputModel Input { get; set; } = new();
+
+                        public string ReturnUrl { get; set; } = "/";
+
+                        public class InputModel
+                        {
+                        [Required(ErrorMessage = "Kullanıcı adı zorunludur.")]
+                        [StringLength(50, ErrorMessage = "Kullanıcı adı en fazla 50 karakter olabilir.")]
+                        [Display(Name = "Kullanıcı Adı")]
+                        public string UserName { get; set; } = string.Empty;
+
+                        [Required(ErrorMessage = "E-posta zorunludur.")]
+                        [EmailAddress(ErrorMessage = "Geçerli bir e-posta giriniz.")]
+                        [Display(Name = "E-posta")]
+                        public string Email { get; set; } = string.Empty;
+
+                        [Required(ErrorMessage = "Şifre zorunludur.")]
+                        [StringLength(100, ErrorMessage = "Şifre en az {2}, en fazla {1} karakter olmalıdır.", MinimumLength = 6)]
+                        [DataType(DataType.Password)]
+                        [Display(Name = "Şifre")]
+                        public string Password { get; set; } = string.Empty;
+
+                        [DataType(DataType.Password)]
+                        [Display(Name = "Şifre (Tekrar)")]
+                        [Compare("Password", ErrorMessage = "Şifreler uyuşmuyor.")]
+                        public string ConfirmPassword { get; set; } = string.Empty;
+                        }
+
+                        public void OnGet(string? returnUrl = null)
+                        {
+                        ReturnUrl = returnUrl ?? "/";
+                        }
+
+                        public async Task<IActionResult>
+                            OnPostAsync(string? returnUrl = null)
+                            {
+                            ReturnUrl = returnUrl ?? "/";
+
+                            if (!ModelState.IsValid)
+                            return Page();
+
+                            var user = new IdentityUser
+                            {
+                            UserName = Input.UserName.Trim(),
+                            Email = Input.Email.Trim()
+                            };
+
+                            var result = await _userManager.CreateAsync(user, Input.Password);
+
+                            if (result.Succeeded)
+                            {
+                            _logger.LogInformation("Kullanıcı yeni bir hesap oluşturdu.");
+
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                            return LocalRedirect(ReturnUrl);
+                            }
+
+                            foreach (var error in result.Errors)
+                            {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                            }
+
+                            return Page();
+                            }
+                            }
+                            }
