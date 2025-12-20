@@ -26,6 +26,8 @@
                 <th>Tarih</th>
                 <th>Proje</th>
                 <th>İşlemler</th>
+                <th>Atanan</th>
+
             </tr>
         </thead>
         <tbody>
@@ -56,6 +58,10 @@
                             @item.Title
                         </span>
                     </td>
+                    <td>
+                        @(item.AssignedUser?.UserName ?? "-")
+                    </td>
+
                     <td>
                         @if (string.IsNullOrWhiteSpace(item.Description))
                         {

@@ -17,11 +17,14 @@ namespace wep_programlama_odev.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        // ✅ Proje durumu
+        // Proje durumu
         [Required]
         public ProjectStatus Status { get; set; } = ProjectStatus.Baslanmadi;
 
         // Navigation
         public ICollection<TaskItem> TaskItems { get; set; } = new List<TaskItem>();
+
+        // Proje üyeleri
+        public ICollection<ProjectMember> Members { get; set; } = new List<ProjectMember>();
     }
 }

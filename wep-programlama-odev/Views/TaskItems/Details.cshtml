@@ -19,6 +19,9 @@
         wep_programlama_odev.Models.TaskStatus.Tamamlandi => "Tamamlandı",
         _ => Model.Status.ToString()
     };
+
+    // ✅ Controller'dan ViewBag ile gelen yorumlar
+    var comments = ViewBag.Comments as List<wep_programlama_odev.Models.TaskComment>;
 }
 
 <h1 class="page-title">Görev Detayı</h1>
@@ -62,8 +65,62 @@
                 @Model.Project.Name
             }
         </dd>
+
+        @* ✅ Atanan kişi *@
+        <dt class="col-sm-3">Atanan Kişi</dt>
+        <dd class="col-sm-9">
+            @{
+                var assignedName =
+                Model.AssignedUser?.UserName
+                ?? Model.AssignedUser?.Email
+                ?? (string.IsNullOrWhiteSpace(Model.AssignedUserId) ? null : Model.AssignedUserId);
+            }
+
+            @if (string.IsNullOrWhiteSpace(assignedName))
+            {
+                <span class="text-muted">Atama yapılmamış.</span>
+            }
+            else
+            {
+                @assignedName
+            }
+        </dd>
     </dl>
 </div>
+
+@* ✅ YORUMLAR *@
+<div class="card-custom mt-3">
+    <h4 class="mb-3">Yorumlar</h4>
+    <hr />
+
+    @if (Model.TaskComments == null || !Model.TaskComments.Any())
+    {
+        <p class="text-muted mb-0">Bu göreve henüz yorum yazılmamış.</p>
+    }
+    else
+    {
+        <div class="list-group">
+            @foreach (var c in Model.TaskComments.OrderByDescending(x => x.CreatedAt))
+            {
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>
+                            @(c.User?.UserName ?? c.User?.Email ?? "Kullanıcı")
+                        </strong>
+                        <small class="text-muted">
+                            @c.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                        </small>
+                    </div>
+
+                    <div class="mt-2">
+                        @c.Text
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
 
 <div class="mt-2">
     @if (isAdmin)
@@ -77,7 +134,6 @@
         Listeye Dön
     </a>
 
-    @* İstersen proje detayına dönüş de ekleyelim *@
     @if (Model.Project != null)
     {
         <a asp-controller="Projects" asp-action="Details" asp-route-id="@Model.ProjectId" class="btn btn-outline-primary">

@@ -27,20 +27,25 @@
                     <span>Anasayfa</span>
                 </a>
 
-                @* Projeler/Görevler: login olan herkes görebilir, CRUD admin *@
                 <a class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Projects" ? "active" : "")"
                    asp-controller="Projects" asp-action="Index">
                     <span class="sidebar-icon">📁</span>
                     <span>Projeler</span>
                 </a>
 
-                @* Görevler sayfası sadece Admin ise menüde görünsün (sende controller Admin) *@
+                <a class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "TaskItems" ? "active" : "")"
+                   asp-controller="TaskItems" asp-action="Index">
+                    <span class="sidebar-icon">✅</span>
+                    <span>Görevler</span>
+                </a>
+
+                @* Kullanıcılar sadece Admin menüde görünsün *@
                 @if (User.IsInRole("Admin"))
                 {
-                    <a class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "TaskItems" ? "active" : "")"
-                       asp-controller="TaskItems" asp-action="Index">
-                        <span class="sidebar-icon">✅</span>
-                        <span>Görevler</span>
+                    <a class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")"
+                       asp-controller="Users" asp-action="Index">
+                        <span class="sidebar-icon">👤</span>
+                        <span>Kullanıcılar</span>
                     </a>
                 }
 
@@ -53,6 +58,7 @@
                 </a>
             </nav>
 
+            <!-- SIDEBAR FOOTER (SOL ALT HESAP) -->
             <div class="sidebar-footer">
                 <div class="sidebar-footer-card">
                     <div class="footer-title">Hesap</div>
@@ -67,6 +73,10 @@
                         }
                     </div>
                 </div>
+
+                <div class="mt-2">
+                    <partial name="_LoginPartial" />
+                </div>
             </div>
         </aside>
 
@@ -76,10 +86,6 @@
             <header class="topbar">
                 <div class="topbar-left">
                     <span class="topbar-page">@ViewData["Title"]</span>
-                </div>
-
-                <div class="topbar-right">
-                    <partial name="_LoginPartial" />
                 </div>
             </header>
 

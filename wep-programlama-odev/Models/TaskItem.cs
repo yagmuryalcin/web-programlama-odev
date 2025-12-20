@@ -1,11 +1,14 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace wep_programlama_odev.Models
 {
     public class TaskItem
     {
         public int Id { get; set; }
+        public ICollection<TaskComment> TaskComments { get; set; } = new List<TaskComment>();
+
 
         [Required(ErrorMessage = "Başlık zorunludur.")]
         [StringLength(150, ErrorMessage = "Başlık en fazla 150 karakter olabilir.")]
@@ -21,6 +24,10 @@ namespace wep_programlama_odev.Models
 
         [Required(ErrorMessage = "Proje seçiniz.")]
         public int ProjectId { get; set; }
+
+        // Görev atanan kullanıcı (Team Member)
+        public string? AssignedUserId { get; set; }
+        public IdentityUser? AssignedUser { get; set; }
 
         // Navigation
         public Project? Project { get; set; }

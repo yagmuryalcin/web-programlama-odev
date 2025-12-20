@@ -48,6 +48,14 @@
                     </select>
                     <span asp-validation-for="ProjectId" class="text-danger"></span>
                 </div>
+                <!-- Atanan Kullanıcı -->
+                <div class="form-group">
+                    <label class="control-label">Görev Atanacak Kullanıcı</label>
+                    <select asp-for="AssignedUserId" class="form-control" asp-items="ViewBag.AssignedUserId">
+                        <option value="">-- Kullanıcı Seçin --</option>
+                    </select>
+                    <span asp-validation-for="AssignedUserId" class="text-danger"></span>
+                </div>
 
                 <!-- Butonlar -->
                 <div class="mt-3">
